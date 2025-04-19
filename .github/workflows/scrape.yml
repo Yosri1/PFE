@@ -1,0 +1,37 @@
+name: Scrape Job Postings
+
+on:
+  schedule:
+    - cron: '0 0,12 * * *' # Run at 00:00 and 12:00 UTC daily
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run scraper
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: python job_scraper.py
+
+      - name: Commit results (optional)
+        run: |
+          git config --global user.name 'GitHub Action'
+          git config --global user.email 'action@github.com'
+          git add .
+          git commit -m "Update job postings" || echo "No changes to commit"
+          git push
+        if: success()
