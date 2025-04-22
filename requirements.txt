@@ -1,6 +1,1 @@
-pandas
-requests
-beautifulsoup4
-sqlalchemy
-psycopg2-binary
-dateparser
+pandas requests beautifulsoup4 sqlalchemy psycopg2-binary python-dateutil dateparser google-generativeai
