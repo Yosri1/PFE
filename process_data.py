@@ -33,7 +33,7 @@ def process_job_data():
     model = setup_gemini(GOOGLE_API_KEY)
     
     # Load job postings
-    df = pd.read_sql("SELECT * FROM job_postings_commerce", engine)
+    df = pd.read_sql("SELECT * FROM job_postings", engine)
     
     # Perform NLP analysis
     analysis_results = [job_analysis(desc, model) for desc in df['Description']]
@@ -47,7 +47,7 @@ def process_job_data():
     final_melted = melt_dataframe_columns(merged_dataframe, columns_to_explode)
     
     # Save to database
-    final_melted.to_sql('job_postings_commerce', engine, if_exists='replace', index=False)
+    final_melted.to_sql('job_postings', engine, if_exists='replace', index=False)
     print("Data successfully stored in Neon PostgreSQL!")
 
 if __name__ == "__main__":
