@@ -3,7 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 import dateparser
 from utils.text_utils import remove_extra_spaces
-
+import re 
 def scrape_keejob(logger):
     """Scrape job postings from Keejob."""
     parent_url = "https://www.keejob.com/offres-emploi/?keywords=agroalimentaire&page={i}"
