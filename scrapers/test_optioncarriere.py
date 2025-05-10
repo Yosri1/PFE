@@ -19,7 +19,7 @@ class TestOptioncarriereScraper(unittest.TestCase):
         <html>
             <body>
                 <h1>Food Scientist</h1>
-                <p class="company">AgroCorp</p>
+                <p class="company">Business</p>
                 <section class="content">Job description text</section>
                 <ul class="details">
                     <li><svg xlink:href="#icon-location"></svg><span>Tunis</span></li>
@@ -45,7 +45,7 @@ class TestOptioncarriereScraper(unittest.TestCase):
         
         mock_get.side_effect = [mock_response, mock_empty_response]
         
-        parent_url = "https://www.optioncarriere.tn/emploi?s=agroalimentaire&l=Tunisie&p={i}"
+        parent_url = "https://www.optioncarriere.tn/emploi?s=Business&l=Tunisie&p={i}"
         result = find_number_of_pages(parent_url, self.logger)
         
         self.assertEqual(result, 1)
@@ -67,7 +67,7 @@ class TestOptioncarriereScraper(unittest.TestCase):
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0]['Source'], 'Optioncarriere')
         self.assertEqual(result[0]['JobTitle'], 'Food Scientist')
-        self.assertEqual(result[0]['Entreprise'], 'AgroCorp')
+        self.assertEqual(result[0]['Entreprise'], 'Business')
         self.assertEqual(result[0]['WorkLocation'], 'Tunis')
 
     def test_extract_optioncarriere_meta(self):
@@ -76,7 +76,7 @@ class TestOptioncarriereScraper(unittest.TestCase):
         
         expected = {
             'JobTitle': 'Food Scientist',
-            'Entreprise': 'AgroCorp',
+            'Entreprise': 'Business',
             'Sector': None,
             'Size': None,
             'Description': 'Job description text',

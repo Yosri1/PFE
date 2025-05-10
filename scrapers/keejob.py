@@ -10,9 +10,9 @@ from datetime import datetime
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-def scrape_keejob(logger):
+def scrape_keejob(logger,Major):
     """Scrape job postings from Keejob."""
-    parent_url = "https://www.keejob.com/offres-emploi/?keywords=agroalimentaire&page={i}"
+    parent_url = f"https://www.keejob.com/offres-emploi/?keywords={Major}&page={{i}}"
     logger.info("Starting Keejob scraping process")
     
     try:
@@ -56,6 +56,8 @@ def scrape_keejob(logger):
                             job_soup = BeautifulSoup(job_response.text, 'html5lib')
                             meta = extract_keejob_meta(job_soup)
                             meta['Source'] = 'Keejob'
+                            meta['Major'] = Major
+                          
 
                             job_data.append(meta)
                             logger.info(f"Successfully scraped job posting: {meta.get('JobTitle', 'Unknown')}")

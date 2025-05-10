@@ -20,7 +20,7 @@ def find_number_of_pages(parent_url, logger):
             if no_results or not parent_soup.find_all('article', class_='job clicky'):
                 return page_number - 1
             page_number += 1
-            logger.info(f"Checking page {page_number}...")
+            logger.info(f"Checking page {page_number}..   ")
         except requests.RequestException as e:
             logger.error(f"Error fetching page {page_number}: {e}")
             return page_number - 1
@@ -66,9 +66,9 @@ def extract_optioncarriere_meta(soup):
     meta_info['Langues'] = None
     return meta_info
 
-def scrape_optioncarriere(logger):
+def scrape_optioncarriere(logger,Major):
     """Scrape job postings from Optioncarriere."""
-    parent_url = "https://www.optioncarriere.tn/emploi?s=agroalimentaire&l=Tunisie&p={i}"
+    parent_url = f"https://www.optioncarriere.tn/emploi?s={Major}&l=Tunisie&p={{i}}"
     num_pages = find_number_of_pages(parent_url, logger)
     logger.info(f"Number of pages to scrape from Optioncarriere: {num_pages}")
     
@@ -87,6 +87,8 @@ def scrape_optioncarriere(logger):
                 job_soup = BeautifulSoup(job_response.text, 'html5lib')
                 meta = extract_optioncarriere_meta(job_soup)
                 meta['Source'] = 'Optioncarriere'
+                meta['Major'] = Major
+
                 job_data.append(meta)
         except requests.RequestException as e:
             logger.error(f"Error fetching URL {url}: {e}")

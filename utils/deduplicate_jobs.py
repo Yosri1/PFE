@@ -1,6 +1,9 @@
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+from langdetect import detect
+from nltk.corpus import stopwords
+import nltk
 import logging
 import sys
 
@@ -12,13 +15,22 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-def deduplicate_jobs_by_description(job_data, similarity_threshold=0.9):
+# Download stopwords if not already downloaded
+nltk.download('stopwords')
+
+def detect_language(text):
+    try:
+        return detect(text)
+    except:
+        return 'unknown'
+
+def deduplicate_jobs_by_description(job_data, similarity_threshold=0.92):
     """
-    Removes duplicate job descriptions using cosine similarity.
-    Keeps the job with the earliest  Scraped.
+    Removes duplicate job descriptions using cosine similarity, grouped by language.
+    Keeps the job with the earliest 'Scraped' date.
 
     Parameters:
-    - job_data (list of dict): List of job postings, each with 'Description' and ' Scraped'.
+    - job_data (list of dict): List of job postings, each with 'Description' and 'Scraped'.
     - similarity_threshold (float): Threshold above which descriptions are considered duplicates.
 
     Returns:
@@ -27,7 +39,6 @@ def deduplicate_jobs_by_description(job_data, similarity_threshold=0.9):
     logger.info("Starting job deduplication process")
 
     # Convert to DataFrame
-    logger.info("Converting job data to DataFrame")
     df = pd.DataFrame(job_data)
     
     if 'Description' not in df.columns or 'Scraped' not in df.columns:
@@ -35,36 +46,48 @@ def deduplicate_jobs_by_description(job_data, similarity_threshold=0.9):
         raise ValueError("Each job dict must contain 'Description' and 'Scraped' keys.")
 
     # Parse date
-    logger.info("Parsing  Scraped column")
+    logger.info("Parsing 'Scraped' column")
     df['Scraped'] = pd.to_datetime(df['Scraped'], errors='coerce')
-    
-    # Vectorize job descriptions
-    logger.info("Vectorizing job descriptions")
-    vectorizer = TfidfVectorizer(stop_words='english')
-    tfidf_matrix = vectorizer.fit_transform(df['Description'].fillna(""))
 
-    # Compute similarity
-    logger.info("Computing cosine similarity matrix")
-    similarity_matrix = cosine_similarity(tfidf_matrix)
+    # Detect language
+    logger.info("Detecting language of job descriptions")
+    df['lang'] = df['Description'].fillna("").apply(detect_language)
 
-    # Track which jobs to keep
-    logger.info("Identifying duplicate jobs")
+    # Prepare output
     to_keep = set()
-    seen = set()
 
-    for i in range(len(df)):
-        if i in seen:
+    for lang_code, group in df.groupby('lang'):
+        logger.info(f"Processing language group: {lang_code} with {len(group)} entries")
+
+        if lang_code not in ['en', 'fr']:
+            logger.warning(f"Skipping unsupported language: {lang_code}")
             continue
 
-        group = [i]
-        for j in range(i + 1, len(df)):
-            if similarity_matrix[i][j] >= similarity_threshold:
-                group.append(j)
-                seen.add(j)
+        stop_words = stopwords.words('english') if lang_code == 'en' else stopwords.words('french')
 
-        # Select earliest  Scraped in the group
-        earliest_index = df.loc[group]['Scraped'].idxmin()
-        to_keep.add(earliest_index)
+        vectorizer = TfidfVectorizer(stop_words=stop_words)
+        tfidf_matrix = vectorizer.fit_transform(group['Description'].fillna(""))
+
+        similarity_matrix = cosine_similarity(tfidf_matrix)
+
+        local_seen = set()
+        group_indices = group.index.tolist()
+
+        for i, idx_i in enumerate(group_indices):
+            if idx_i in local_seen:
+                continue
+
+            dup_group = [idx_i]
+
+            for j in range(i + 1, len(group_indices)):
+                idx_j = group_indices[j]
+                if similarity_matrix[i][j] >= similarity_threshold:
+                    dup_group.append(idx_j)
+                    local_seen.add(idx_j)
+
+            earliest_index = df.loc[dup_group]['Scraped'].idxmin()
+            to_keep.add(earliest_index)
 
     logger.info(f"Completed deduplication. Keeping {len(to_keep)} unique jobs out of {len(df)}")
-    return df.loc[to_keep].to_dict(orient='records')
+    return df.loc[list(to_keep)].to_dict(orient='records')
+
