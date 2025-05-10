@@ -13,16 +13,15 @@ def main():
     engine = get_engine(DATABASE_URL)
 
     try:
-        #Majors = ["Business", "Finance", "Marketing", "IT", "Accounting", "comptabilité"]
-        Majors = [ "Accounting"]
+        Majors = ["Business", "Finance", "Marketing", "IT", "Accounting", "comptabilité"]
         all_jobs = []  # Initialize once outside the loop
 
         # Step 1: Scrape job postings from all sources for each major
         for Major in Majors:
             logger.info(f" Currently working on {Major}  Major ")
-            #optioncarriere_jobs = scrape_optioncarriere(logger,Major)
+            optioncarriere_jobs = scrape_optioncarriere(logger,Major)
             keejob_jobs = scrape_keejob(logger,Major)
-            all_jobs.extend(keejob_jobs)  # Accumulate
+            all_jobs.extend(keejob_jobs + optioncarriere_jobs)  # Accumulate
 
 
         if not all_jobs:
