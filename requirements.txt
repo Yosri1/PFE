@@ -8,3 +8,4 @@ dateparser
 google-generativeai
 html5lib
 datetime
+scikit-learn
