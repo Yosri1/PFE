@@ -15,10 +15,10 @@ logger = logging.getLogger(__name__)
 def deduplicate_jobs_by_description(job_data, similarity_threshold=0.9):
     """
     Removes duplicate job descriptions using cosine similarity.
-    Keeps the job with the earliest Date_scraped.
+    Keeps the job with the earliest  Scraped.
 
     Parameters:
-    - job_data (list of dict): List of job postings, each with 'Description' and 'Date_scraped'.
+    - job_data (list of dict): List of job postings, each with 'Description' and ' Scraped'.
     - similarity_threshold (float): Threshold above which descriptions are considered duplicates.
 
     Returns:
@@ -30,13 +30,13 @@ def deduplicate_jobs_by_description(job_data, similarity_threshold=0.9):
     logger.info("Converting job data to DataFrame")
     df = pd.DataFrame(job_data)
     
-    if 'Description ' not in df.columns or 'Date_scraped' not in df.columns:
-        logger.error("Missing required columns: 'Description' and 'Date_scraped'")
-        raise ValueError("Each job dict must contain 'Description' and 'Date_scraped' keys.")
+    if 'Description' not in df.columns or 'Scraped' not in df.columns:
+        logger.error("Missing required columns: 'Description' and 'Scraped'")
+        raise ValueError("Each job dict must contain 'Description' and 'Scraped' keys.")
 
     # Parse date
-    logger.info("Parsing Date_scraped column")
-    df['Date_scraped'] = pd.to_datetime(df['Date_scraped'], errors='coerce')
+    logger.info("Parsing  Scraped column")
+    df['Scraped'] = pd.to_datetime(df['Scraped'], errors='coerce')
     
     # Vectorize job descriptions
     logger.info("Vectorizing job descriptions")
@@ -62,8 +62,8 @@ def deduplicate_jobs_by_description(job_data, similarity_threshold=0.9):
                 group.append(j)
                 seen.add(j)
 
-        # Select earliest Date_scraped in the group
-        earliest_index = df.loc[group]['Date_scraped'].idxmin()
+        # Select earliest  Scraped in the group
+        earliest_index = df.loc[group]['Scraped'].idxmin()
         to_keep.add(earliest_index)
 
     logger.info(f"Completed deduplication. Keeping {len(to_keep)} unique jobs out of {len(df)}")

@@ -5,7 +5,6 @@ from utils.text_utils import remove_extra_spaces
 import re
 import logging
 from datetime import datetime
-today_date = datetime.now()
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -18,7 +17,7 @@ def scrape_keejob(logger):
     
     try:
         logger.debug(f"Fetching first page: {parent_url.format(i=1)}")
-        response = requests.get(parent_url.format(i=1), timeout=10 , verify=False  )
+        response = requests.get(parent_url.format(i=1), timeout=10 ,    )
         response.raise_for_status()
         parent_soup = BeautifulSoup(response.text, 'html5lib')
         
@@ -35,13 +34,12 @@ def scrape_keejob(logger):
                     logger.warning("Could not extract number of pages from Keejob")
         
         job_data = []
-        date_scraped = today_date.strftime('%Y-%m-%d')  # or '%d-%m-%Y' if preferred
 
         for i in range(1, num_pages + 1):
             url = parent_url.format(i=i)
             logger.info(f"Scraping page {i}/{num_pages}: {url}")
             try:
-                response = requests.get(url, timeout=10, verify=False)
+                response = requests.get(url, timeout=10,  )
                 response.raise_for_status()
                 soup = BeautifulSoup(response.text, 'html5lib')
                 job_container = soup.find("div", class_="block_b row-fluid")
@@ -53,12 +51,11 @@ def scrape_keejob(logger):
                         abs_url = 'https://www.keejob.com' + anchor['href']
                         logger.debug(f"Fetching job posting: {abs_url}")
                         try:
-                            job_response = requests.get(abs_url, timeout=10,verify=False  )
+                            job_response = requests.get(abs_url, timeout=10,   )
                             job_response.raise_for_status()
                             job_soup = BeautifulSoup(job_response.text, 'html5lib')
                             meta = extract_keejob_meta(job_soup)
                             meta['Source'] = 'Keejob'
-                            meta['Date_scraped'] = date_scraped
 
                             job_data.append(meta)
                             logger.info(f"Successfully scraped job posting: {meta.get('JobTitle', 'Unknown')}")
@@ -114,6 +111,7 @@ def extract_keejob_meta(soup):
         la_date = meta_info.get("Publiée le")
         meta_info['Published'] = dateparser.parse(la_date) if la_date else None
         logger.debug(f"Extracted published date: {meta_info.get('Published')}")
+
         
         job_title = soup.find('h1')
         meta_info['JobTitle'] = remove_extra_spaces(job_title.text if job_title else None)
