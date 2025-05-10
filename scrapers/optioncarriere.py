@@ -4,14 +4,17 @@ from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 import re
 from utils.text_utils import remove_extra_spaces
+from datetime import datetime
+today_date = datetime.now()
 
+today_date = datetime.now()
 def find_number_of_pages(parent_url, logger):
     """Find the number of pages to scrape."""
     page_number = 1
     while True:
         url = parent_url.format(i=page_number)
         try:
-            response = requests.get(url, timeout=10)
+            response = requests.get(url, timeout=10, verify=False)
             response.raise_for_status()
             parent_soup = BeautifulSoup(response.text, 'html5lib')
             no_results = parent_soup.find('p', class_='mb-2', string='Aucun résultat. Veuillez modifier votre recherche.')
@@ -69,20 +72,22 @@ def scrape_optioncarriere(logger):
     logger.info(f"Number of pages to scrape from Optioncarriere: {num_pages}")
     
     job_data = []
+    date_scraped = today_date.strftime('%Y-%m-%d')  # or '%d-%m-%Y' if preferred
     for i in range(1, num_pages + 1):
         url = parent_url.format(i=i)
         try:
-            response = requests.get(url, timeout=10)
+            response = requests.get(url, timeout=10, verify=False )
             response.raise_for_status()
             soup = BeautifulSoup(response.text, 'html5lib')
             job_containers = soup.find_all("article", class_="job clicky")
             for anchor in job_containers:
                 abs_url = 'https://www.optioncarriere.tn' + anchor['data-url']
-                job_response = requests.get(abs_url, timeout=10)
+                job_response = requests.get(abs_url, timeout=10,verify=False )
                 job_response.raise_for_status()
                 job_soup = BeautifulSoup(job_response.text, 'html5lib')
                 meta = extract_optioncarriere_meta(job_soup)
                 meta['Source'] = 'Optioncarriere'
+                meta['Date_scraped'] = date_scraped
                 job_data.append(meta)
         except requests.RequestException as e:
             logger.error(f"Error fetching URL {url}: {e}")

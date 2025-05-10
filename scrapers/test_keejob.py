@@ -1,5 +1,6 @@
 import unittest
 from unittest.mock import patch, MagicMock
+import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 import logging
