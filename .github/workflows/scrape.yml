@@ -2,7 +2,7 @@ name: Daily Job Scraper
 
 on:
   schedule:
-    - cron: '0 12 * * *'  # Runs daily at 12:00 UTC
+    - cron: '012 * * *'  # Runs daily at 12:00 UTC
   workflow_dispatch:  # Allows manual triggering
 
 jobs:
