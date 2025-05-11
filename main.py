@@ -13,7 +13,7 @@ def main():
     engine = get_engine(DATABASE_URL)
 
     try:
-        Majors = ["Business", "Finance", "Marketing", "IT", "Accounting", "comptabilité"]
+        Majors = ["Business", "Finance", "Marketing", "Information Technology", "Accounting", "comptabilité"]
         all_jobs = []  # Initialize once outside the loop
 
         # Step 1: Scrape job postings from all sources for each major
