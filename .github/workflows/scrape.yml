@@ -3,8 +3,6 @@ name: Daily Job Scraper
 on:
   schedule:
     - cron: '012 * * *'  # Runs daily at 12:00 UTC
-  workflow_dispatch:  # Allows manual triggering
-
 jobs:
   scrape-jobs:
     runs-on: ubuntu-latest
