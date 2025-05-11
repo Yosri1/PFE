@@ -9,4 +9,5 @@ google-generativeai
 html5lib
 datetime
 scikit-learn
-langdetect nltk 
+langdetect nltk
+python-dotenv

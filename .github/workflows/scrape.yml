@@ -1,37 +1,34 @@
-name: Scrape Job Postings
+name: Daily Job Scraper
 
-#on:
- # schedule:
- #// - cron: '0 0,12 * * *' # Run at 00:00 and 12:00 UTC daily**
-  #workflow_dispatch: # Allow manual triggering
+on:
+  schedule:
+    - cron: '0 12 * * *'  # Runs daily at 12:00 UTC
+  workflow_dispatch:  # Allows manual triggering
 
 jobs:
-  scrape:
+  scrape-jobs:
     runs-on: ubuntu-latest
+
     steps:
+      # Step 1: Checkout the repository
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
+      # Step 2: Set up Python
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: '3.11'  # Adjust to your Python version
 
+      # Step 3: Install dependencies
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install pandas psycopg2-binary python-dotenv requests beautifulsoup4  # Add other dependencies as needed
 
+      # Step 4: Run the scraper
       - name: Run scraper
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: python job_scraper.py
-
-      - name: Commit results (optional)
-        run: |
-          git config --global user.name 'GitHub Action'
-          git config --global user.email 'action@github.com'
-          git add .
-          git commit -m "Update job postings" || echo "No changes to commit"
-          git push
-        if: success()
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}  # Add if needed
+        run: python main.py
