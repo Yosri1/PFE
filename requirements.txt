@@ -1,7 +1,6 @@
 pandas 
 requests 
 beautifulsoup4 
-SQLAlchemy
 psycopg2-binary 
 python-dateutil 
 dateparser 
@@ -11,3 +10,4 @@ datetime
 scikit-learn
 langdetect nltk
 python-dotenv
+sqlalchemy
