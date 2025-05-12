@@ -1,4 +1,5 @@
 pandas 
+langdetect
 requests 
 beautifulsoup4 
 psycopg2-binary 
@@ -8,7 +9,6 @@ google-generativeai
 html5lib
 datetime
 scikit-learn
-langdetect 
 nltk
 python-dotenv
 sqlalchemy
