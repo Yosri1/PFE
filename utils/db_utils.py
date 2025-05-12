@@ -18,7 +18,6 @@ def save_to_db_non_dupe(job_data, engine):
     
     df = pd.DataFrame(job_data)
     df['ID'] = [str(uuid.uuid4()) for _ in range(len(df))]
-    df['Scraped'] = datetime.now().date()
 
     columns = ["ID","Major","JobTitle", "Published", "JobType", "WorkLocation", "Experience", 
                "Education", "Availability", "Langues", "Entreprise", 
@@ -36,7 +35,7 @@ def save_to_db(job_data, engine):
     
     df = pd.DataFrame(job_data)
     df['ID'] = [str(uuid.uuid4()) for _ in range(len(df))]
-
+    df['Scraped'] = datetime.now().date()
     columns = ["ID","Major","JobTitle", "Published", "JobType", "WorkLocation", "Experience", 
                "Education", "Availability", "Langues", "Entreprise", 
                "Sector", "Size", "Description", "Source","Scraped",]
