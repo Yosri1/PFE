@@ -49,7 +49,7 @@ def extract_optioncarriere_meta(soup):
     if tags_ul:
         published_text = tags_ul.find('span', class_='badge badge-r badge-s').text.strip() if tags_ul.find('span', class_='badge badge-r badge-s') else None
         if published_text and "Il y a" in published_text:
-            # Match different time patterns (handles both singular and plural)
+            # Match different time patterns
             days_match = re.search(r'Il y a (\d+) jours?(?:\s|$)', published_text)
             hours_match = re.search(r'Il y a (\d+) heures?(?:\s|$)', published_text)
             months_match = re.search(r'Il y a (\d+) mois', published_text)
@@ -72,6 +72,7 @@ def extract_optioncarriere_meta(soup):
             meta_info['Published'] = None
     else:
         meta_info['Published'] = None
+
     
     meta_info['Reference'] = None
     meta_info['Experience'] = None
