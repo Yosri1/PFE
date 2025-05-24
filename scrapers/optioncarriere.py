@@ -7,21 +7,20 @@ from utils.text_utils import remove_extra_spaces
 from datetime import datetime
 
 today_date = datetime.now()
-
 def find_number_of_pages(parent_url, logger):
     """Find the number of pages to scrape."""
     page_number = 1
     while True:
         url = parent_url.format(i=page_number)
         try:
-            response = requests.get(url, timeout=10)
+            response = requests.get(url, timeout=10,  )
             response.raise_for_status()
             parent_soup = BeautifulSoup(response.text, 'html5lib')
             no_results = parent_soup.find('p', class_='mb-2', string='Aucun résultat. Veuillez modifier votre recherche.')
             if no_results or not parent_soup.find_all('article', class_='job clicky'):
                 return page_number - 1
             page_number += 1
-            logger.info(f"Checking page {page_number}..")
+            logger.info(f"Checking page {page_number}..   ")
         except requests.RequestException as e:
             logger.error(f"Error fetching page {page_number}: {e}")
             return page_number - 1
@@ -81,7 +80,7 @@ def extract_optioncarriere_meta(soup):
     meta_info['Langues'] = None
     return meta_info
 
-def scrape_optioncarriere(logger, Major):
+def scrape_optioncarriere(logger,Major):
     """Scrape job postings from Optioncarriere."""
     parent_url = f"https://www.optioncarriere.tn/emploi?s={Major}&l=Tunisie&p={{i}}"
     num_pages = find_number_of_pages(parent_url, logger)
@@ -91,19 +90,19 @@ def scrape_optioncarriere(logger, Major):
     for i in range(1, num_pages + 1):
         url = parent_url.format(i=i)
         try:
-            response = requests.get(url, timeout=10)
+            response = requests.get(url, timeout=10,   )
             response.raise_for_status()
             soup = BeautifulSoup(response.text, 'html5lib')
             job_containers = soup.find_all("article", class_="job clicky")
             for anchor in job_containers:
                 abs_url = 'https://www.optioncarriere.tn' + anchor['data-url']
-                job_response = requests.get(abs_url, timeout=10)
+                job_response = requests.get(abs_url, timeout=10,  )
                 job_response.raise_for_status()
                 job_soup = BeautifulSoup(job_response.text, 'html5lib')
                 meta = extract_optioncarriere_meta(job_soup)
                 meta['Source'] = 'Optioncarriere'
                 meta['Major'] = Major
-                
+
                 job_data.append(meta)
         except requests.RequestException as e:
             logger.error(f"Error fetching URL {url}: {e}")
