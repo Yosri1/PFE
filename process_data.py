@@ -1,7 +1,7 @@
 # process_data.py
 import pandas as pd
 from config.config import DATABASE_URL, GOOGLE_API_KEY
-from nlp.gemini_nlp import setup_gemini, job_analysis, process_json_list
+from LLM.gemini_nlp import setup_gemini, job_analysis, process_json_list
 from utils.db_utils import get_engine
 import time
 
@@ -75,9 +75,6 @@ def process_job_data():
             print("Saving melted data to database...")
             final_melted.to_sql('melted_data_processed', engine, if_exists='replace', index=False)
             print("Melted data saved to 'melted_data_processed' table.")
-            final_melted.to_excel('results.xlsx')
-            final_melted.to_csv('results.csv')
-            print("Data successfully saved to Excel!")
         else:
             print("No data to save after processing!")
             

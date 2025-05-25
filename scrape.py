@@ -46,6 +46,6 @@ def main():
         logger.error(f"Error in main function: {e}")
         return {"status": "error", "message": str(e)}
 
-if __name__ == "__scrape__":
+if __name__ == "__main__":
     result = main()
     print(json.dumps(result, default=str))
