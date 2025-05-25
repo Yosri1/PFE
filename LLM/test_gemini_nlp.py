@@ -1,7 +1,7 @@
 import unittest
 import json
 from unittest.mock import patch, MagicMock
-from gemini_nlp import setup_gemini, job_analysis, process_json_list
+from nlp.gemini_nlp import setup_gemini, job_analysis, process_json_list
 
 class TestGeminiNLP(unittest.TestCase):
     def setUp(self):
