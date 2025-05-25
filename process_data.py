@@ -42,7 +42,7 @@ def process_job_data():
         
         # Perform NLP analysis with rate limiting
         analysis_results = []
-        for desc in df['Description']:
+        for desc in df['Description'][:8]:
             try:
                 result = job_analysis(desc, model)
                 analysis_results.append(result)
